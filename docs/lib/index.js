@@ -1,4 +1,3 @@
-const marked = require('marked-man')
 const localeCompare = require('@isaacs/string-locale-compare')('en')
 const { join, basename, resolve } = require('path')
 const transformHTML = require('./transform-html.js')
@@ -142,8 +141,12 @@ const replaceHelpLinks = (src) => {
   )
 }
 
-const transformMan = (src, { data }) =>
-  marked(`# ${data.title}(${data.section}) - ${data.description}\n\n${src}`)
+const transformMan = (src, { data, unified, remarkParse, remarkMan }) => {
+  return String(unified()
+    .use(remarkParse)
+    .use(remarkMan)
+    .processSync(`# ${data.title}(${data.section}) - ${data.description}\n\n${src}`))
+}
 
 const manPath = (name, { data }) => join(`man${data.section}`, `${name}.${data.section}`)
 

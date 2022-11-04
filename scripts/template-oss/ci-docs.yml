@@ -1,0 +1,21 @@
+{{> ci }}
+
+  compare-docs:
+    {{> job jobName="Compare Docs" jobCheckout=(obj fetch-depth=0) jobIf="github.event_name == 'pull_request'" }}
+      - name: Build Docs
+        run: |
+          node . run prepack
+          mv man/ man-update/
+          mv docs/output/ docs/output-update/
+          mv docs/content/ docs/content-update/
+      - name: Get Current Docs
+        run: |
+          git clean -fd
+          git checkout $\{{ github.event.pull_request.head.ref }}
+          node . run resetdeps
+          node . run prepack
+      - name: Diff Docs
+        run: |
+          diff -r man/ man-update/
+          diff -r docs/output/ docs/output-update/
+          diff -r docs/content/ docs/content-update/

@@ -2,6 +2,7 @@ module.exports = {
   rootRepo: {
     add: {
       '.github/workflows/ci.yml': 'ci.yml',
+      '.github/workflows/ci-docs.yml': 'ci-docs.yml',
       '.github/workflows/ci-release.yml': 'ci-release.yml',
       '.github/workflows/create-node-pr.yml': 'create-node-pr.yml',
       '.github/ISSUE_TEMPLATE/bug.yml': false,
