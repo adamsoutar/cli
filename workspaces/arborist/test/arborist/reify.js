@@ -75,11 +75,8 @@ const { moveFile } = t.mock('@npmcli/fs', { 'fs/promises': fspMock })
 const mocks = {
   fs: fsMock,
   'fs/promises': fspMock,
-  '@npmcli/fs':  { ...npmFs, moveFile }
+  '@npmcli/fs': { ...npmFs, moveFile },
 }
-
-
-
 
 const oldLockfileWarning = [
   'warn',
