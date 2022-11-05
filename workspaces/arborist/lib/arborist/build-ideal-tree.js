@@ -6,7 +6,7 @@ const pacote = require('pacote')
 const cacache = require('cacache')
 const promiseCallLimit = require('promise-call-limit')
 const realpath = require('../../lib/realpath.js')
-const { resolve, dirname } = require('path')
+const { resolve, dirname, posix } = require('path')
 const treeCheck = require('../tree-check.js')
 const { readdirScoped } = require('@npmcli/fs')
 const { lstat, readlink } = require('fs/promises')
@@ -446,14 +446,15 @@ module.exports = cls => class IdealTreeBuilder extends cls {
     const globalExplicitUpdateNames = []
     if (this[_global] && (this[_updateAll] || this[_updateNames].length)) {
       const nm = resolve(this.path, 'node_modules')
-      for (const name of await readdirScoped(nm).catch(() => [])) {
+      for (const namePath of await readdirScoped(nm).catch(() => [])) {
+        const name = posix.join(namePath)
         tree.package.dependencies = tree.package.dependencies || {}
         const updateName = this[_updateNames].includes(name)
         if (this[_updateAll] || updateName) {
           if (updateName) {
             globalExplicitUpdateNames.push(name)
           }
-          const dir = resolve(nm, name)
+          const dir = resolve(nm, namePath)
           const st = await lstat(dir)
             .catch(/* istanbul ignore next */ er => null)
           if (st && st.isSymbolicLink()) {
