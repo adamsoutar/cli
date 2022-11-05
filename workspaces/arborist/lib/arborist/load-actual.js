@@ -1,6 +1,6 @@
 // mix-in implementing the loadActual method
 
-const { relative, dirname, resolve, join, normalize } = require('path')
+const { relative, dirname, resolve, join, normalize, posix } = require('path')
 
 const rpj = require('read-package-json-fast')
 const { readdirScoped } = require('@npmcli/fs')
@@ -361,7 +361,7 @@ module.exports = cls => class ActualLoader extends cls {
   async [_loadFSChildren] (node) {
     const nm = resolve(node.realpath, 'node_modules')
     try {
-      const kids = await readdirScoped(nm)
+      const kids = await readdirScoped(nm).then(list => list.map(i => posix.join(i)))
       return Promise.all(
         // ignore . dirs and retired scoped package folders
         kids.filter(kid => !/^(@[^/]+\/)?\./.test(kid))
@@ -410,8 +410,8 @@ module.exports = cls => class ActualLoader extends cls {
             break
           }
 
-          const entries = nmContents.get(p) ||
-            await readdirScoped(p + '/node_modules').catch(() => [])
+          const entries = nmContents.get(p) || await readdirScoped(p + '/node_modules')
+            .catch(() => []).then(list => list.map(i => posix.join(i)))
           nmContents.set(p, entries)
           if (!entries.includes(name)) {
             continue

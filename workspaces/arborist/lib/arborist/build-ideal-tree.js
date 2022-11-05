@@ -454,7 +454,7 @@ module.exports = cls => class IdealTreeBuilder extends cls {
           if (updateName) {
             globalExplicitUpdateNames.push(name)
           }
-          const dir = resolve(nm, namePath)
+          const dir = resolve(nm, name)
           const st = await lstat(dir)
             .catch(/* istanbul ignore next */ er => null)
           if (st && st.isSymbolicLink()) {
